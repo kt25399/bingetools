@@ -1,0 +1,187 @@
+library(tidyverse)
+
+tmp <- etho_all$df_sub %>% mutate(sum_value = sum_inactive,
+                                  percentage = percentage_inactive,
+                                  cue_timing = as.character(cue_timing_f)) %>% 
+  select(!percentage_inactive:percentage_high & !sum_inactive)
+
+
+etho_hc <- bind_rows(all, tmp) 
+
+etho_hc <- etho_hc %>% 
+  filter(rater != "KRT" & rater != "NNN") %>% 
+  mutate(cue_timing_f = factor(cue_timing,
+                               levels = c("shock", "context", 
+                                          "pretone", "tone",
+                                          "posttone")),
+         rater_f = factor(rater, levels = c("Ethovision all time", "avg"),
+                          labels = c("Ethovision all time (25 samples / second)",
+                                     "Hand scoring average (Ryan and Natalie)")))
+
+tmp2 <- etho_all$df_sum %>% mutate(avg_sum = avg_sum_inactive,
+                                   avg_percentage = avg_percentage_inactive,
+                                   sd_percentage = sd_percentage_inactive,
+                                   se_percentage = se_percentage_inactive,
+                                   n = n,
+                                   cue_timing = as.character(cue_timing_f)) %>% 
+  select(!avg_sum_inactive:se_percentage_high)
+
+etho_hc_sum <- bind_rows(sum, tmp2) %>% 
+  
+  filter(rater != "KRT" & rater != "NNN") %>% 
+  mutate(cue_timing_f = factor(cue_timing,
+                               levels = c("shock", "context", 
+                                          "pretone", "tone",
+                                          "posttone")),
+         rater_f = factor(rater, levels = c("Ethovision all time", 
+                                            "avg"),
+                          labels = c("Ethovision all time (25 samples / second)",
+                                     "Hand scoring average (Ryan and Natalie)")))
+
+ggplot(etho_hc_sum, 
+       aes(y = avg_percentage, x = Condition, fill = rater_f)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_errorbar(aes(ymin = avg_percentage - se_percentage, 
+                    ymax = avg_percentage + se_percentage), 
+                size = 0.7,
+                position = "dodge") +
+  geom_point(data = etho_hc, 
+             size = 3,
+             aes(y = percentage, x = Condition, group = rater_f), 
+             position = position_dodge(width = 0.9)) +
+  theme_prism() +
+  facet_wrap(~ cue_timing_f, scales = "free", nrow = 1) +
+  ylab("Percentage Time Freezing") +
+  scale_y_continuous(breaks = seq(0, 100, 10), limits = c(0, 100)) 
+
+colors <- c(RColorBrewer::brewer.pal(n = 6, "Set2"), RColorBrewer::brewer.pal(n = 6, "Set2"), RColorBrewer::brewer.pal(n = 4, "Set2"))
+
+etho_hc %>% filter(rater_f == "Hand scoring average (Ryan and Natalie)") %>% 
+  ggplot(aes(x = cue_timing_f, y = percentage, color = as.factor(subject), group = as.factor(subject))) + 
+  geom_point(size = 4) + 
+  geom_line() +
+  facet_wrap(~ Condition, nrow = 3, scales = "free_x") +
+  theme_prism() +
+  #scale_color_manual(values = colors) +
+  xlab("Trial") +
+  ylab("Percentage Time Freezing (1 sample/10 sec)") +
+  ggtitle("Hand Scored Freezing")
+
+ggplot() + 
+  geom_line(data = etho_hc_sum %>% filter(rater_f == "Hand scoring average (Ryan and Natalie)"),
+            aes(x = cue_timing_f, y = avg_percentage, group = Condition),
+            size = 1.25) +
+  geom_point(data = etho_hc_sum %>% filter(rater_f == "Hand scoring average (Ryan and Natalie)"),
+             size = 6, aes(x = cue_timing_f, y = avg_percentage)) +
+  geom_point(data = etho_hc %>% filter(rater_f == "Hand scoring average (Ryan and Natalie)"),
+             size = 4, 
+             aes(x = cue_timing_f, y = percentage, 
+                 color = as.factor(subject), group = as.factor(subject))) + 
+  # geom_line(data = etho_hc %>% filter(rater_f == "Hand scoring average (Ryan and Natalie)"),
+  #           aes(x = cue_timing_f, y = percentage,
+  #               color = as.factor(subject), group = as.factor(subject))) +
+  facet_wrap(~ Condition, nrow = 3, scales = "free_x") +
+  theme_prism() +
+  #scale_color_manual(values = colors) +
+  xlab("Trial") +
+  ylab("Percentage Time Freezing (1 sample/10 sec)") +
+  ggtitle("Hand Scored Freezing")
+
+
+etho_hc_sum %>% filter(rater_f == "Hand scoring average (Ryan and Natalie)") %>% 
+  ggplot(aes(x = cue_timing_f, y = avg_percentage, group = Condition)) + 
+  geom_point() + 
+  geom_line() +
+  facet_wrap( ~ Condition)
+
+
+ggplot(etho_hc_sum, aes(y = avg_percentage, x = Condition, fill = rater)) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_errorbar(aes(ymin = avg_percentage - se_percentage, 
+                    ymax = avg_percentage + se_percentage), 
+                position = "dodge") +
+  geom_point(data = all, aes(y = percentage, x = Condition), position = position_dodge(width = .9)) +
+  theme_prism()
+
+
+etho_hc %>% 
+  filter(cue_timing_f != "shock" & cue_timing_f != "tone") %>% 
+  ggplot(aes(y = percentage, x = Condition, fill = rater_f)) + 
+  geom_boxplot(outlier.shape = NA)+
+  facet_wrap(~ cue_timing_f, scales = "free") +
+  geom_point(size = 2.5, position = position_jitterdodge(jitter.width = 0.1,
+                                                         dodge.width = 0.75)) +
+  theme_prism() +
+  #scale_y_continuous(breaks = seq(0, 100, 10), limits = c(0, 100)) +
+  ylab("Percentage Time Freezing") +
+  xlab("Diet Condition") +
+  theme(legend.text = element_text(size=22))
+
+
+tmp_long <- etho_all$df %>% mutate(bin = as.character(recording_time),
+                   value = inactive_state) %>% 
+  select(!recording_time:high_state) %>% 
+  drop_na()
+
+etho_hc_long <- bind_rows(long, tmp_long)
+
+cp <- tmp_long %>% 
+  filter(cue_timing_f == "context") %>% 
+  group_by(bin, Condition, cue_timing_f) %>% 
+  summarise(sum_val = sum(value) * 100,
+            n = n(),
+            val_norm = sum_val / n) %>%
+  ggplot(aes(x = as.numeric(bin), y = val_norm, group = Condition, color = Condition)) + 
+  #geom_col(position = position_dodge(), aes(fill = Condition)) +
+  geom_point(aes(fill = Condition), alpha = 0.1) +
+  geom_smooth(method = 'loess', se = FALSE, size = 1.5) + 
+  theme_prism() +
+  theme(legend.position = c(0.9,0.9)) +
+  xlab("Seconds (25 samples / second)") +
+  ylab("Percentage of Animals Freezing") +
+  #scale_x_continuous(breaks = seq(0, 36, 2)) +
+  #scale_y_continuous(breaks = seq(0, 80, 20)) +
+  ggtitle("Context")
+
+pretp <- tmp_long %>% 
+  filter(cue_timing_f == "pretone") %>% 
+  group_by(bin, Condition, cue_timing_f) %>% 
+  summarise(sum_val = sum(value) * 100,
+            n = n(),
+            val_norm = sum_val / n) %>%
+  ggplot(aes(x = as.numeric(bin), y = val_norm, group = Condition, color = Condition)) + 
+  #geom_col(position = position_dodge(), aes(fill = Condition)) + 
+  geom_point(aes(fill = Condition), alpha = 0.1) +
+  geom_smooth(method = 'loess', se = FALSE, size = 1.5) + 
+  theme_prism() +
+  theme(legend.position = "none",
+        legend.key.size = unit(.1, 'cm')) +
+  xlab("Seconds (25 samples / second)") +
+  ylab("Percentage of Animals Freezing") +
+  #scale_x_continuous(breaks = seq(0, 36, 2)) +
+  scale_y_continuous(limits = c(-1, 80), breaks = seq(0, 80, 20)) +
+  ggtitle("Pretone")
+
+
+
+postp <- tmp_long %>% 
+  filter(cue_timing_f == "posttone") %>% 
+  group_by(bin, Condition, cue_timing_f) %>% 
+  summarise(sum_val = sum(value) * 100,
+            n = n(),
+            val_norm = sum_val / n) %>%
+  ggplot(aes(x = as.numeric(bin), y = val_norm, group = Condition, color = Condition)) + 
+  #geom_col(position = position_dodge(), aes(fill = Condition)) + 
+  geom_point(aes(fill = Condition), alpha = 0.1) +
+  geom_smooth(method = 'loess', se = FALSE, size = 1.5) + 
+  theme_prism() +
+  theme(legend.position = "none")  +
+  xlab("Seconds (25 samples / second)") +
+  ylab("Percentage of Animals Freezing") +
+  #scale_x_continuous(breaks = seq(0, 36, 2)) +
+  #scale_y_continuous(breaks = seq(-10, 80, 20)) +
+  ggtitle("Post-tone")
+
+grid.arrange(cp, pretp, postp, layout_matrix = rbind(c(1,1),c(2,3)))
+
+  

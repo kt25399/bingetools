@@ -1,0 +1,6 @@
+intox_logs <- c("../Fear Conditioning/data/FEAR1_subjectdata.xlsx",
+                "../Fear Conditioning/data/FEAR2_subjectdata.xlsx",
+                "../Fear Conditioning/data/FEAR3_subjectdata.xlsx",
+                "../Fear Conditioning/data/FEAR4_subjectdata.xlsx")
+
+intox <- map(intox_logs, intox_dose_data, sheet = 'Behavior') %>% bind_rows()
