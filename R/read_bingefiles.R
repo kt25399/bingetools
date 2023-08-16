@@ -13,8 +13,8 @@ intox_dose_data <- function(file, sheet) {
                          timepoint = c(1:12))}
 }
 
-wd_data <- function(df, sheet) {
-  wd <- readxl::read_excel(df, sheet = sheet) %>%
+wd_data <- function(file, sheet) {
+  wd <- readxl::read_excel(file, sheet = sheet) %>%
     tidyr::drop_na()
 
   if(nrow(intox)*ncol(intox) != 0){
@@ -23,4 +23,17 @@ wd_data <- function(df, sheet) {
                    names_to = "timepoint") %>%
       dplyr::group_by(Subject) %>%
       dplyr::mutate(timepoint = c(1:17))}
+}
+
+bec_data <- function(file, sheet) {
+  bec <- readxl::read_excel(file, sheet = sheet) %>%
+    tidyr::drop_na()
+
+  if(nrow(intox)*ncol(intox) != 0){
+    bec <- bec %>%
+      tidyr::pivot_longer(cols = starts_with("Trial"),
+                   names_to = "trial") %>%
+      dplyr::group_by(Subject) %>%
+      dplyr::summarize(average = mean(value))}
+  # mutate(average = mean(trial_1, trial_2, trial_3))
 }
