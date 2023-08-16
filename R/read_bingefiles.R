@@ -1,3 +1,4 @@
+
 intox_dose_data <- function(file, sheet) {
     intox_dose <- readxl::read_excel(file, sheet = sheet) %>%
       tidyr::drop_na() %>%
@@ -29,11 +30,10 @@ bec_data <- function(file, sheet) {
   bec <- readxl::read_excel(file, sheet = sheet) %>%
     tidyr::drop_na()
 
-  if(nrow(intox)*ncol(intox) != 0){
+  if(nrow(bec)*ncol(bec) != 0){
     bec <- bec %>%
       tidyr::pivot_longer(cols = starts_with("Trial"),
                    names_to = "trial") %>%
-      dplyr::group_by(Subject) %>%
+      dplyr::group_by(Subject, Group, Sex, Study) %>%
       dplyr::summarize(average = mean(value))}
-  # mutate(average = mean(trial_1, trial_2, trial_3))
 }
