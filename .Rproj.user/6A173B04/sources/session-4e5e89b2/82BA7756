@@ -1,0 +1,28 @@
+{
+    "id": "82BA7756",
+    "path": null,
+    "project_path": null,
+    "type": "object_explorer",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1692234663136.0,
+    "source_on_save": false,
+    "relative_order": 6,
+    "properties": {
+        "id": "280423bfc08e462c88b98569a335a63e",
+        "name": "srtx",
+        "title": "srtx",
+        "language": "R",
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 6374923328850317170,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1692234663136,
+    "read_only": false,
+    "read_only_alternatives": []
+}

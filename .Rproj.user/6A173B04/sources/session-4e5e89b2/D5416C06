@@ -1,0 +1,28 @@
+{
+    "id": "D5416C06",
+    "path": null,
+    "project_path": null,
+    "type": "object_explorer",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1692234940148.0,
+    "source_on_save": false,
+    "relative_order": 6,
+    "properties": {
+        "id": "3a73521426cc40369f938f0ee3f2ee43",
+        "name": "fear",
+        "title": "fear",
+        "language": "R",
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 3900181196925396082,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1692234940148,
+    "read_only": false,
+    "read_only_alternatives": []
+}

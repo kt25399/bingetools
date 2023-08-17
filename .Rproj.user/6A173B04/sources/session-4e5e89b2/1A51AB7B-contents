@@ -1,4 +1,10 @@
 
+weight_data <- function(file, sheet) {
+  weight <- readxl::read_excel(file, sheet = sheet) %>%
+    tidyr::drop_na() %>%
+    pivot_longer(cols = c(6:9))
+}
+
 intox_dose_data <- function(file, sheet) {
     intox_dose <- readxl::read_excel(file, sheet = sheet) %>%
       tidyr::drop_na() %>%
