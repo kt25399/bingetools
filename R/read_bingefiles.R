@@ -1,11 +1,24 @@
+intox_wd_params <- function(file) {
 
-weight_data <- function(file, sheet) {
+}
+
+get_subjects <- function(file, sheet = 'Binge Weight') {
+  subjects <- readxl::read_excel(file, sheet = sheet) %>%
+    dplyr::select('Subject','Group','Sex','Study','Timepoint') %>%
+    dplyr::mutate(subject = dplyr::case_when(Study == 'SRTX 1' ~ Subject + 100,
+                                             Study == 'SRTX 2' ~ Subject + 200,
+                                             Study == 'SRTX 3' ~ Subject + 300),
+                  group = dplyr::if_else(Group == 'Ethanol', 'Ethanol', 'Control')
+    )
+}
+
+weight_data <- function(file, sheet = 'Binge Weight') {
   weight <- readxl::read_excel(file, sheet = sheet) %>%
     tidyr::drop_na() %>%
     pivot_longer(cols = c(6:9))
 }
 
-intox_dose_data <- function(file, sheet) {
+intox_dose_data <- function(file, sheet = 'Behavior') {
     intox_dose <- readxl::read_excel(file, sheet = sheet) %>%
       tidyr::drop_na() %>%
       dplyr::filter(Group == "Ethanol")
@@ -20,7 +33,7 @@ intox_dose_data <- function(file, sheet) {
                          timepoint = c(1:12))}
 }
 
-wd_data <- function(file, sheet) {
+wd_data <- function(file, sheet = 'Withdrawal') {
   wd <- readxl::read_excel(file, sheet = sheet) %>%
     tidyr::drop_na()
 
@@ -32,7 +45,7 @@ wd_data <- function(file, sheet) {
       dplyr::mutate(timepoint = c(1:17))}
 }
 
-bec_data <- function(file, sheet) {
+bec_data <- function(file, sheet = 'BEC') {
   bec <- readxl::read_excel(file, sheet = sheet) %>%
     tidyr::drop_na()
 
