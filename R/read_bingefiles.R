@@ -65,7 +65,7 @@ get_subjects <- function(file, sheet = 'Binge Weight') {
 weight_data <- function(file, sheet = 'Binge Weight') {
   weight <- readxl::read_excel(file, sheet = sheet) %>%
     tidyr::drop_na() %>%
-    pivot_longer(cols = c(6:9))
+    tidyr::pivot_longer(cols = c(6:9))
 }
 
 intox_dose_data <- function(file, sheet = 'Behavior') {
