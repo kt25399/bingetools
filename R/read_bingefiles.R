@@ -29,6 +29,12 @@ intox_wd_params <- function(binge_files) {
     dplyr::bind_rows() %>%
     dplyr::left_join(., subjects)
   saveRDS(bec, 'data/binge/long/bec.rds')
+
+  return(list('weights' = weights,
+              'intox' = intox,
+              'dose' = dose,
+              'wd' = wd,
+              'bec' = bec))
 }
 
 make_files <- function() {
@@ -69,7 +75,8 @@ intox_dose_data <- function(file, sheet = 'Behavior') {
 
     if(nrow(intox_dose)*ncol(intox_dose) != 0){
       intox_dose <- intox_dose %>%
-        tidyr::pivot_longer(cols = starts_with("Day")) %>%
+        tidyr::pivot_longer(cols = starts_with("Day"),
+                            names_to = 'day') %>%
         dplyr::group_by(Subject) %>%
         dplyr:: mutate(day =
                          stringr::str_extract(day, "Day \\d"),
@@ -84,7 +91,7 @@ wd_data <- function(file, sheet = 'Withdrawal') {
     wd <- wd %>%
       tidyr::pivot_longer(cols = starts_with("4")) %>%
       dplyr::group_by(Subject) %>%
-      dplyr::mutate(timepoint = c(1:17))}
+      dplyr::mutate(name = c(1:17))}
 }
 
 bec_data <- function(file, sheet = 'BEC') {
@@ -96,5 +103,5 @@ bec_data <- function(file, sheet = 'BEC') {
       tidyr::pivot_longer(cols = starts_with("Trial"),
                    names_to = "trial") %>%
       dplyr::group_by(Subject, Group, Sex, Study) %>%
-      dplyr::summarize(value = mean(value))}
+      dplyr::summarize(mean_bec = mean(value))}
 }
