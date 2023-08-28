@@ -1,5 +1,49 @@
-intox_wd_params <- function(file) {
+intox_wd_params <- function(binge_files) {
+  make_files()
 
+  subjects <- map(sheets, get_subjects) %>%
+    dplyr::bind_rows()
+  saveRDS(subjects, 'data/binge/subject_log.rds')
+
+  weights <- map(sheets, weight_data) %>%
+    dplyr::bind_rows() %>%
+    dplyr::left_join(., subjects)
+  saveRDS(weights, 'data/binge/long/weights.rds')
+
+  intox <- map(sheets, intox_dose_data) %>%
+    dplyr::bind_rows() %>%
+    dplyr::left_join(., subjects)
+  saveRDS(intox, 'data/binge/long/intoxication.rds')
+
+  dose <- map(sheets, intox_dose_data, 'Dose') %>%
+    dplyr::bind_rows() %>%
+    dplyr::left_join(., subjects)
+  saveRDS(dose, 'data/binge/long/dose.rds')
+
+  wd <- map(sheets, wd_data) %>%
+    dplyr::bind_rows() %>%
+    dplyr::left_join(., subjects)
+  saveRDS(wd, 'data/binge/long/withdrawal.rds')
+
+  bec <- map(sheets, bec_data) %>%
+    dplyr::bind_rows() %>%
+    dplyr::left_join(., subjects)
+  saveRDS(bec, 'data/binge/long/bec.rds')
+}
+
+make_files <- function() {
+  if(!dir.exists('data')){
+    dir.create('data')
+  }
+  if(!dir.exists(file.path('data','binge'))) {
+    dir.create(file.path('data','binge'))
+  }
+  if(!dir.exists(file.path('data','binge', 'raw'))) {
+    dir.create(file.path('data','binge','raw'))
+  }
+  if(!dir.exists(file.path('data','binge', 'long'))) {
+    dir.create(file.path('data','binge','long'))
+  }
 }
 
 get_subjects <- function(file, sheet = 'Binge Weight') {
@@ -25,8 +69,7 @@ intox_dose_data <- function(file, sheet = 'Behavior') {
 
     if(nrow(intox_dose)*ncol(intox_dose) != 0){
       intox_dose <- intox_dose %>%
-        tidyr::pivot_longer(cols = starts_with("Day"),
-                            names_to = "day") %>%
+        tidyr::pivot_longer(cols = starts_with("Day")) %>%
         dplyr::group_by(Subject) %>%
         dplyr:: mutate(day =
                          stringr::str_extract(day, "Day \\d"),
@@ -39,8 +82,7 @@ wd_data <- function(file, sheet = 'Withdrawal') {
 
   if(nrow(intox)*ncol(intox) != 0){
     wd <- wd %>%
-      tidyr::pivot_longer(cols = starts_with("4"),
-                   names_to = "timepoint") %>%
+      tidyr::pivot_longer(cols = starts_with("4")) %>%
       dplyr::group_by(Subject) %>%
       dplyr::mutate(timepoint = c(1:17))}
 }
@@ -54,5 +96,5 @@ bec_data <- function(file, sheet = 'BEC') {
       tidyr::pivot_longer(cols = starts_with("Trial"),
                    names_to = "trial") %>%
       dplyr::group_by(Subject, Group, Sex, Study) %>%
-      dplyr::summarize(average = mean(value))}
+      dplyr::summarize(value = mean(value))}
 }
