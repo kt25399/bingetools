@@ -13,8 +13,8 @@ mean_intox_params <- function(weights, intox, dose, wd, bec) {
   weight <- weight_loss(weights)
   saveRDS(weight, 'data/binge/weight_loss.rds')
 
-  return(c('mean_intox_params' = mean_intox_params,
-           'weight_loss' = weight))
+  return(list('mean_intox_params' = mean_intox_params,
+              'weight_loss' = weight))
 }
 
 weight_loss <- function(df) {
