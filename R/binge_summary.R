@@ -1,5 +1,5 @@
 mean_intox_params <- function(weights, intox, dose, wd, bec) {
-  intox <- avg_intox(intox, Subject, Group, Sex, Study, Timepoint)
+  intox <- mean_intox(intox, Subject, Group, Sex, Study, Timepoint)
   dose <- dose_day(dose, Subject, Group, Sex, Study, Timepoint, day) %>%
     mean_dose(., Subject, Group, Sex, Study, Timepoint)
   wd <- withdrawal_severity(wd, Subject, Group, Sex, Study, Timepoint)
@@ -12,15 +12,16 @@ mean_intox_params <- function(weights, intox, dose, wd, bec) {
 
   weight <- weight_loss(weights)
   saveRDS(weight, 'data/binge/weight_loss.rds')
-}
 
-weight_loss(weights)
+  return(c('mean_intox_params' = mean_intox_params,
+           'weight_loss' = weight))
+}
 
 weight_loss <- function(df) {
   df %>%
     tidyr::pivot_wider() %>%
     dplyr::mutate(begin = `Day 1`) %>%
-    tidyr::pivot_longer(cols = stringr::starts_with('Day ')) %>%
+    tidyr::pivot_longer(cols = dplyr::starts_with('Day ')) %>%
     dplyr::mutate(pecent = (((begin - value) / begin)) * 100)
 }
 

@@ -87,7 +87,7 @@ wd_data <- function(file, sheet = 'Withdrawal') {
   wd <- readxl::read_excel(file, sheet = sheet) %>%
     tidyr::drop_na()
 
-  if(nrow(intox)*ncol(intox) != 0){
+  if(nrow(wd)*ncol(wd) != 0){
     wd <- wd %>%
       tidyr::pivot_longer(cols = starts_with("4")) %>%
       dplyr::group_by(Subject) %>%
