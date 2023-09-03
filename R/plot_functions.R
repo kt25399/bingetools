@@ -19,9 +19,26 @@ make_plot <- function(df, ..., xlab = '', ylab = '') {
     ggplot2::guides(fill = guide_legend(override.aes = list(shape = NA)))
 }
 
-add_significance <- function(df, model, ...) {
+add_significance <- function(df, model, ..., formula, offset, points) {
+  max_point <- df %>%
+    group_by(...) %>%
+    dplyr::summarise(max = max({{ points }}) + offset) %>% .$max
+
+
   tmp <- df %>%
     dplyr::group_by(...) %>%
-    rstatix::emmeans_test(...)
+    rstatix::emmeans_test(formula, model = model) %>%
+    dplyr::mutate(group1 = 0.8,
+                  group2 = 1.2,
+                  p = p_format(p),
+                  y.position = 1)
+  return(list(max_point, tmp))
+}
+
+p_format <- function(p) {
+  p_formatted = dplyr::if_else(p < 0.001, "p < 0.001",
+                               stringr::str_c("p = ",
+                                              format(round(p, 3),
+                                                     nsmall= 3)))
 }
 
