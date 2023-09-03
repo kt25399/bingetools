@@ -1,4 +1,4 @@
-make_plot <- function(df, ...) {
+make_plot <- function(df, ..., xlab = '', ylab = '') {
   ggplot2::ggplot(df, ...) +
     ggplot2::stat_summary(geom = 'col', fun = 'mean',
                           position = position_dodge(0.9),
@@ -11,11 +11,17 @@ make_plot <- function(df, ...) {
     ggplot2::scale_y_continuous(expand = c(0,0)) +
     ggpubr::theme_pubr() +
     ggpubr::labs_pubr(base_family = 'Times New Roman') +
-    ggplot2::ylab('BrdU+ cells/section') +
-    ggplot2::xlab('') +
+    ggplot2::ylab(ylab) +
+    ggplot2::xlab(xlab) +
     ggplot2::coord_cartesian(clip = "off") +
     ggplot2::theme(axis.ticks.x = element_blank(), text = element_text(size = 25)) +
     ggplot2::scale_fill_manual(values = c('white', 'grey')) +
     ggplot2::guides(fill = guide_legend(override.aes = list(shape = NA)))
+}
+
+add_significance <- function(df, model, ...) {
+  tmp <- df %>%
+    dplyr::group_by(...) %>%
+    rstatix::emmeans_test(...)
 }
 
