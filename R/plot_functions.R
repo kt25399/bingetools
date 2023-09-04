@@ -1,4 +1,4 @@
-make_plot <- function(df, mapping, xlab = '', ylab = '') {
+make_plot <- function(df, mapping, xlab = '', ylab = '', ylim = NA) {
   ggplot2::ggplot(df, mapping) +
     ggplot2::stat_summary(geom = 'col', fun = 'mean',
                           position = ggplot2::position_dodge(0.9),
@@ -8,7 +8,7 @@ make_plot <- function(df, mapping, xlab = '', ylab = '') {
                           position = ggplot2::position_dodge(0.9),
                           width = 0.1) +
     ggbeeswarm::geom_beeswarm(size = 2, cex = 5, dodge.width = 0.9) +
-    ggplot2::scale_y_continuous(expand = c(0,0)) +
+    ggplot2::scale_y_continuous(expand = c(0,0), limits = ylim) +
     ggpubr::theme_pubr() +
     ggpubr::labs_pubr(base_family = 'Times New Roman') +
     ggplot2::ylab(ylab) +
@@ -20,6 +20,7 @@ make_plot <- function(df, mapping, xlab = '', ylab = '') {
     ggplot2::guides(fill =
                       ggplot2::guide_legend(override.aes = list(shape = NA)))
 }
+
 make_sholl_plot <- function(df, mapping, xlab = '', ylab = '', title = '') {
   ggplot2::ggplot(df, mapping) +
     ggplot2::stat_summary(geom = 'line', fun = 'mean', size = 1) +
@@ -27,10 +28,14 @@ make_sholl_plot <- function(df, mapping, xlab = '', ylab = '', title = '') {
     ggplot2::stat_summary(geom = 'point', fun = 'mean', size = 5, shape = 21, color = 'black') +
     ggplot2::scale_fill_manual(values = c('white', 'grey')) +
     ggplot2::ggtitle(title) +
-    ggprism::theme_prism(base_family = 'Times New Roman') +
+    ggpubr::theme_pubr() +
+    ggpubr::labs_pubr(base_family = 'Times New Roman') +
     ggplot2::scale_x_continuous(breaks = seq(0, 300, by = 30), limits = c(0,300)) +
-    xlab(xlab) +
-    ylab(ylab)
+    ggplot2::theme(text = ggplot2::element_text(size = 25),
+                   legend.title = ggplot2::element_blank()) +
+    ggplot2::xlab(xlab) +
+    ggplot2::ylab(ylab) +
+    ggplot2::ggtitle(title)
 }
 
 add_significance <- function(df, model, ..., formula, offset, points) {
@@ -60,8 +65,12 @@ add_sholl_significance <- function(df, model, ..., formula, offset, group, x, me
     dplyr::group_by(...) %>%
     rstatix::emmeans_test(formula, model = model) %>%
     dplyr::mutate(radius = as.numeric(as.character(radius)),
+                  p.adj = stats::p.adjust(p,  method = 'bonferroni'),
                   p.adj.signif =
-                    dplyr::if_else(p.adj.signif != 'ns', p.adj.signif, ''),
+                    dplyr::case_when(p.adj < 0.001 ~ "***",
+                                     p.adj < 0.01 ~ "**",
+                                     p.adj < 0.05 ~ "*",
+                                     p.adj >= 0.05 ~ ''),
                   y.position = max_se)
 }
 
