@@ -8,7 +8,7 @@ make_plot <- function(df, mapping, xlab = '', ylab = '', ylim = NA) {
                           position = ggplot2::position_dodge(0.9),
                           width = 0.1) +
     ggbeeswarm::geom_beeswarm(size = 2, cex = 5, dodge.width = 0.9) +
-    ggplot2::scale_y_continuous(expand = c(0,0), limits = ylim) +
+    ggplot2::scale_y_continuous(expand = c(0,0), limits = c(0,ylim)) +
     ggpubr::theme_pubr() +
     ggpubr::labs_pubr(base_family = 'Times New Roman') +
     ggplot2::ylab(ylab) +
