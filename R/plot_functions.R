@@ -21,6 +21,40 @@ make_plot <- function(df, mapping, xlab = '', ylab = '', ylim = NA) {
                       ggplot2::guide_legend(override.aes = list(shape = NA)))
 }
 
+make_faceted_plot <- function(df, mapping, facet, xlab = '', ylab = '', ylim = NA) {
+  make_plot(df, mapping, xlab = '', ylab = '', ylim = NA) +
+  ggplot2::facet_wrap(facet) +
+  ggplot2::theme(strip.background=
+                   ggplot2::element_rect(colour=NA, fill=NA),
+                 strip.text =
+                   ggplot2::element_text(face = 'bold'),
+                 legend.title = ggplot2::element_blank())
+}
+
+make_interaction_plot <- function(emmean_obj, formula, facet) {
+  emmeans::emmip(emmean_obj, formula, CIs = TRUE, plotit = FALSE) %>%
+    ggplot2::ggplot(aes(x = xvar, y = yvar, shape = tvar,
+                        group = tvar, fill = tvar)) +
+    ggplot2::geom_line(position= ggplot2::position_dodge(width = 0.1),
+                       size = 1) +
+    ggplot2::geom_errorbar(aes(ymin = LCL, ymax = UCL),
+                           width = 0,
+                           position= ggplot2::position_dodge(width = 0.1), size = 1) +
+    ggplot2::geom_point(position= ggplot2::position_dodge(width = 0.1),
+                        size = 5, shape = 21) +
+    ggplot2::facet_wrap(facet) +
+    ggpubr::theme_pubr() +
+    ggpubr::labs_pubr(base_family = "Times New Roman") +
+    ggplot2::scale_fill_manual(values = c('grey', 'white')) +
+    ggplot2::xlab('') +
+    ggplot2::ylab('Linear Prediction') +
+    ggplot2::theme(strip.background=
+                     ggplot2::element_rect(colour=NA, fill=NA),
+                   strip.text =
+                     ggplot2::element_text(face = 'bold'),
+                   legend.title = ggplot2::element_blank())
+}
+
 make_sholl_plot <- function(df, mapping, xlab = '', ylab = '', title = '') {
   ggplot2::ggplot(df, mapping) +
     ggplot2::stat_summary(geom = 'line', fun = 'mean', size = 1) +
