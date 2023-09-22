@@ -22,13 +22,13 @@ make_plot <- function(df, mapping, xlab = '', ylab = '', ylim = NA) {
 }
 
 make_faceted_plot <- function(df, mapping, facet, xlab = '', ylab = '', ylim = NA) {
-  make_plot(df, mapping, xlab = '', ylab = '', ylim = NA) +
-  ggplot2::facet_wrap(facet) +
-  ggplot2::theme(strip.background=
-                   ggplot2::element_rect(colour=NA, fill=NA),
-                 strip.text =
-                   ggplot2::element_text(face = 'bold'),
-                 legend.title = ggplot2::element_blank())
+  make_plot(df, mapping, xlab = '', ylab = '', ylim) +
+    ggplot2::facet_wrap(facet, scales = 'free_x') +
+    ggplot2::theme(strip.background=
+                     ggplot2::element_rect(colour=NA, fill=NA),
+                   strip.text =
+                     ggplot2::element_text(face = 'bold'),
+                   legend.title = ggplot2::element_blank())
 }
 
 make_interaction_plot <- function(emmean_obj, formula, facet) {
