@@ -1,7 +1,7 @@
 Package: bingetools
 Type: Package
 Title: Helper Functions for Experiments
-Version: 0.1.0
+Version: 0.1.1
 Author@R: 
     person('Ryan', 'Thompson',
            role = c('aut', 'cre'),

@@ -21,9 +21,9 @@ make_plot <- function(df, mapping, xlab = '', ylab = '', ylim = NA) {
                       ggplot2::guide_legend(override.aes = list(shape = NA)))
 }
 
-make_faceted_plot <- function(df, mapping, facet, xlab = '', ylab = '', ylim = NA) {
+make_faceted_plot <- function(df, mapping, facet, xlab = '', ylab = '', ylim = NA, ...) {
   make_plot(df, mapping, xlab, ylab, ylim) +
-    ggplot2::facet_wrap(facet, scales = 'free_x') +
+    ggplot2::facet_wrap(facet, ...) +
     ggplot2::theme(strip.background=
                      ggplot2::element_rect(colour=NA, fill=NA),
                    strip.text =
@@ -45,7 +45,7 @@ make_interaction_plot <- function(emmean_obj, formula, facet) {
     ggplot2::facet_wrap(facet) +
     ggpubr::theme_pubr() +
     ggpubr::labs_pubr(base_family = "Times New Roman") +
-    ggplot2::scale_fill_manual(values = c('grey', 'white')) +
+    ggplot2::scale_fill_manual(values = c('white', 'grey')) +
     ggplot2::xlab('') +
     ggplot2::ylab('Linear Prediction') +
     ggplot2::theme(strip.background=
