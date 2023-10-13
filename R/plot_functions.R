@@ -75,6 +75,20 @@ make_sholl_plot <- function(df, mapping, xlab = '', ylab = '', title = '') {
     ggplot2::ggtitle(title)
 }
 
+make_faceted_sholl_plot <- function(df, mapping, facet, xlab = '', ylab = '', ylim = NA, ...) {
+  make_sholl_plot(df, mapping, xlab, ylab, ylim) +
+    ggplot2::facet_wrap(facet, ...) +
+    ggplot2::theme(strip.background=
+                     ggplot2::element_rect(colour=NA, fill=NA),
+                   strip.text =
+                     ggplot2::element_text(face = 'bold'),
+                   legend.title = ggplot2::element_blank(),
+                   plot.title = ggplot2::element_text(hjust = 0.5),
+                   axis.text.x =
+                     ggplot2::element_text(angle = 45, hjust=1))
+}
+
+
 add_significance <- function(df, model, ..., formula, offset, points) {
   max_point <- df %>%
     dplyr::group_by(...) %>%
