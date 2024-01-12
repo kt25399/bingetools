@@ -7,8 +7,32 @@ make_plot <- function(df, mapping, xlab = '', ylab = '', ylim = NA) {
                           fun.data = mean_se,
                           position = ggplot2::position_dodge(0.9),
                           width = 0.1) +
-    ggbeeswarm::geom_beeswarm(size = 2, cex = 3, dodge.width = 0.9) +
+    ggbeeswarm::geom_quasirandom(size = 2, cex = 2, dodge.width = 0.9) +
     ggplot2::scale_y_continuous(expand = c(0,0), limits = c(0,ylim)) +
+    ggpubr::theme_pubr() +
+    ggpubr::labs_pubr(base_family = 'Times New Roman') +
+    ggplot2::ylab(ylab) +
+    ggplot2::xlab(xlab) +
+    ggplot2::coord_cartesian(clip = "off") +
+    ggplot2::theme(axis.ticks.x = ggplot2::element_blank(),
+                   text = ggplot2::element_text(size = 25),
+                   legend.title = ggplot2::element_blank()) +
+    ggplot2::scale_fill_manual(values = c('white', 'grey')) +
+    ggplot2::guides(fill =
+                      ggplot2::guide_legend(override.aes = list(shape = NA)))
+}
+
+make_plot_percent <- function(df, mapping, xlab = '', ylab = '', ylim = NA) {
+  ggplot2::ggplot(df, mapping) +
+    ggplot2::stat_summary(geom = 'col', fun = 'mean',
+                          position = ggplot2::position_dodge(0.9),
+                          width = 0.65, color='black') +
+    ggplot2::stat_summary(geom = 'errorbar',
+                          fun.data = mean_se,
+                          position = ggplot2::position_dodge(0.9),
+                          width = 0.1) +
+    ggbeeswarm::geom_quasirandom(size = 2, cex = 2, dodge.width = 0.9) +
+    ggplot2::scale_y_continuous(expand = c(0,0), limits = c(0,ylim), labels = scales::percent) +
     ggpubr::theme_pubr() +
     ggpubr::labs_pubr(base_family = 'Times New Roman') +
     ggplot2::ylab(ylab) +
